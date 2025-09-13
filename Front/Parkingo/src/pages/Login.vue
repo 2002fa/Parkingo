@@ -13,7 +13,7 @@
         <h1>به پارکینگو خوش آمدید!</h1>
 
         <div class="login-box">
-          <form @submit.prevent="submitLogin">
+          <form v-if="step === 'creds'" @submit.prevent="submitLogin">
             <div class="input-group">
               <label for="emailOrPhone">ایمیل یا شماره موبایل</label>
               <input
@@ -52,7 +52,7 @@
               </div>
             </div>
 
-            <div class="bottom-links">
+            <div v-if="step === 'creds'" class="bottom-links">
               <p @click="$router.push({ name: 'forgotPassword' })" class="link-button">
                 رمز عبور خود را فراموش کرده‌اید؟
               </p>
@@ -60,6 +60,44 @@
 
             <button type="submit" :disabled="loading">ورود</button>
           </form>
+
+          <!-- مرحله دوم: تایید کد -->
+          <div v-else class="otp-stage">
+            <h2>کد ارسال شده را وارد نمایید.</h2>
+
+            <form @submit.prevent="submitOtp" class="otp-form">
+              <div class="otp-boxes" dir="ltr">
+                <input
+                  v-for="(v, i) in 4"
+                  :key="i"
+                  ref="otpInputs"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  maxlength="1"
+                  class="otp-input"
+                  :value="otp[i]"
+                  @input="onOtpInput($event, i)"
+                  @keydown.backspace.prevent="onOtpBackspace(i)"
+                  @paste.prevent="onOtpPaste($event)"
+                />
+              </div>
+
+              <p v-if="otpError" class="otp-error">{{ otpError }}</p>
+
+              <button type="submit" :disabled="verifying">
+                {{ verifying ? 'در حال تأیید…' : 'تأیید' }}
+              </button>
+
+              <div class="bottom-links otp-actions">
+                <button type="button" class="linklike" @click="backToCreds">
+                  ویرایش ایمیل/رمز
+                </button>
+                <!-- <span> • </span> -->
+                <button type="button" class="linklike" @click="resendOtp">ارسال مجدد کد</button>
+              </div>
+            </form>
+          </div>
 
           <div class="divider">
             <!-- <div class="line" style="margin-left: 5px"></div>
@@ -92,6 +130,14 @@ const passwordVisible = ref(false) // وضعیت نمایش/مخفی بودن ر
 const router = useRouter()
 const auth = useAuthStore()
 
+// مرحله‌ی ورود: 'creds' = اطلاعات کاربر، 'otp' = تایید کد
+const step = ref<'creds' | 'otp'>('creds')
+// وضعیت و مقادیر OTP
+const otp = ref(['', '', '', '']) // چهار خانه
+const otpInputs = ref<HTMLInputElement[]>([])
+const otpError = ref('')
+const verifying = ref(false)
+
 // متد برای تغییر وضعیت نمایش رمز
 function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value
@@ -99,19 +145,30 @@ function togglePasswordVisibility() {
 
 // متد ورود
 async function submitLogin() {
-  loading.value = true
-  try {
-    const token = 'fake-token' // از API توکن می‌گیریم
-    const role = 'operator' // نقش را از API می‌گیریم
-    auth.setAuth(token, role, emailOrPhone.value)
+  // loading.value = true
+  // try {
+  //   const token = 'fake-token' // از API توکن می‌گیریم
+  //   const role = 'operator' // نقش را از API می‌گیریم
+  //   auth.setAuth(token, role, emailOrPhone.value)
 
-    router.push({ name: 'dashboard' }) // هدایت به صفحه داشبورد
-  } catch (error) {
-    console.error('Login failed', error)
-  } finally {
-    password.value = ''
+  //   router.push({ name: 'dashboard' }) // هدایت به صفحه داشبورد
+  // } catch (error) {
+  //   console.error('Login failed', error)
+  // } finally {
+  //   password.value = ''
+  //   loading.value = false
+  // }
+
+  // فعلاً مرحله‌ی اول فقط اعتبارسنجی فرمی ساده و رفتن به مرحله OTP
+  if (!emailOrPhone.value || !password.value) return
+  loading.value = true
+  // TODO: اگر خواستی در همین‌جا API ارسال OTP بزنی
+  setTimeout(() => {
     loading.value = false
-  }
+    step.value = 'otp' // نمایش صفحه دوم
+    // فوکوس روی خانهٔ اول کد
+    requestAnimationFrame(() => otpInputs.value[0]?.focus())
+  }, 500)
 }
 
 // هدایت به صفحه ثبت نام
@@ -122,6 +179,70 @@ function goToRegister() {
 // هدایت به صفحه فراموشی رمز عبور
 function resetPassword() {
   router.push({ name: 'ForgotPassword' })
+}
+
+function backToCreds() {
+  step.value = 'creds'
+  otp.value = ['', '', '', '']
+  otpError.value = ''
+  passwordVisible.value = false
+}
+
+function onOtpInput(e: Event, idx: number) {
+  const el = e.target as HTMLInputElement
+  const val = el.value.replace(/\D/g, '') // فقط رقم
+  otp.value[idx] = val.slice(-1) || ''
+  if (otp.value[idx] && idx < 3) {
+    otpInputs.value[idx + 1]?.focus()
+  }
+}
+
+function onOtpBackspace(idx: number) {
+  if (otp.value[idx]) {
+    otp.value[idx] = ''
+    return
+  }
+  if (idx > 0) {
+    otpInputs.value[idx - 1]?.focus()
+    otp.value[idx - 1] = ''
+  }
+}
+
+function onOtpPaste(e: ClipboardEvent) {
+  const text = e.clipboardData?.getData('text') || ''
+  const digits = text.replace(/\D/g, '').slice(0, 4).split('')
+  digits.forEach((d, i) => (otp.value[i] = d))
+  const next = digits.length >= 4 ? 3 : digits.length
+  otpInputs.value[next]?.focus()
+}
+
+async function submitOtp() {
+  otpError.value = ''
+  const code = otp.value.join('')
+  if (!/^\d{4}$/.test(code)) {
+    otpError.value = 'کد تایید باید ۴ رقم باشد.'
+    return
+  }
+  verifying.value = true
+  try {
+    // TODO: اینجا به API تایید OTP وصل شو
+    await new Promise((r) => setTimeout(r, 700))
+    // شبیه‌سازی ورود موفق:
+    const token = 'fake-token'
+    const role = 'operator'
+    auth.setAuth(token, role, emailOrPhone.value)
+    router.push({ name: 'dashboard' })
+  } catch (e) {
+    otpError.value = 'کد نامعتبر است. دوباره تلاش کنید.'
+  } finally {
+    verifying.value = false
+  }
+}
+
+function resendOtp() {
+  // TODO: درخواست ارسال مجدد کد به بک
+  otp.value = ['', '', '', '']
+  otpInputs.value[0]?.focus()
 }
 </script>
 
@@ -148,7 +269,8 @@ function resetPassword() {
 
 .left-side img {
   width: 55vw;
-  height: 65vw;
+  height: 60vw;
+  margin-left: -20px;
   max-width: 800px;
   max-height: 880px;
   z-index: 1;
@@ -156,8 +278,9 @@ function resetPassword() {
 
 .right-side {
   width: 60%;
-  height: fit-content;
-  align-items: center;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
   text-align: justify;
 }
 
@@ -263,6 +386,7 @@ button {
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
+  margin-top: 20px;
 }
 
 button:disabled {
@@ -315,7 +439,7 @@ button:hover {
 .eye-icon {
   position: absolute;
   left: 15px;
-  top: 62%;
+  top: 30%;
   transform: translateY(-50%);
   cursor: pointer;
   color: #0277bd;
@@ -332,10 +456,79 @@ button:hover {
   position: relative;
 }
 
+/* ==== OTP Stage ==== */
+.otp-stage {
+  margin-top: 10px;
+  direction: rtl;
+}
+
+.otp-stage h2 {
+  text-align: center;
+  font-size: 19px;
+  font-weight: 900;
+  color: #455a64;
+  margin: 10px 0 20px;
+}
+
+.otp-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.otp-boxes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 16px 0 8px;
+}
+
+.otp-input {
+  width: 56px;
+  height: 56px;
+  text-align: center;
+  font-size: 24px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  outline: none;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.otp-input:focus {
+  border-color: #207be3;
+  box-shadow: 0 0 0 3px rgba(2, 119, 189, 0.08);
+}
+
+.otp-error {
+  color: #c62828;
+  text-align: center;
+  margin: 6px 0 0;
+}
+
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: #0277bd;
+}
+
+.linklike:hover {
+  text-decoration: underline;
+  background: none;
+}
+
+.otp-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
 @media (max-width: 1000px) {
   .left-side img {
-    width: 490px;
-    height: 600px;
+    width: 450px;
+    height: 500px;
   }
   .left-side {
     height: 70vw;
@@ -392,6 +585,8 @@ button:hover {
   .login-page {
     width: 100%;
   }
-  .has-acc { font-size: 14px;}
+  .has-acc {
+    font-size: 14px;
+  }
 }
 </style>
