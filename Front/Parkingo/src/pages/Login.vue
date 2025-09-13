@@ -15,17 +15,35 @@
         <div class="login-box">
           <form v-if="step === 'creds'" @submit.prevent="submitLogin">
             <div class="input-group">
-              <label for="emailOrPhone">ایمیل یا شماره موبایل</label>
+              <label for="emailOrUsername">ایمیل یا نام کاربری</label>
               <input
-                v-model="emailOrPhone"
+                v-model="emailOrUsername"
                 autocomplete="username"
-                id="emailOrPhone"
+                id="emailOrUsername"
                 type="text"
-                placeholder="ایمیل یا شماره موبایل خود را وارد کنید"
+                placeholder="ایمیل یا نام کاربری خود را وارد کنید"
                 required
                 autofocus
               />
             </div>
+
+
+            <div class="input-group">
+              <label for="phone">شماره تلفن</label>
+              <div class="phone-container">
+                <input
+                  v-model.trim="phone"
+                  id="phone"
+                  type="tel"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  autocomplete="tel"
+                  placeholder="شماره موبایل خود را وارد کنید"
+                  required
+                />
+              </div>
+            </div>
+
 
             <div class="input-group">
               <label for="password">رمز عبور</label>
@@ -90,10 +108,7 @@
               </button>
 
               <div class="bottom-links otp-actions">
-                <button type="button" class="linklike" @click="backToCreds">
-                  ویرایش ایمیل/رمز
-                </button>
-                <!-- <span> • </span> -->
+                <button type="button" class="linklike" @click="backToCreds">ویرایش اطلاعات ورود</button>
                 <button type="button" class="linklike" @click="resendOtp">ارسال مجدد کد</button>
               </div>
             </form>
@@ -123,12 +138,14 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-const emailOrPhone = ref('')
+const emailOrUsername = ref('')
+const phone = ref('')
 const password = ref('')
 const loading = ref(false)
 const passwordVisible = ref(false) // وضعیت نمایش/مخفی بودن رمز
 const router = useRouter()
 const auth = useAuthStore()
+const isValidPhone = (v: string) => /^(\+98|0)?9\d{9}$/.test(v.trim())
 
 // مرحله‌ی ورود: 'creds' = اطلاعات کاربر، 'otp' = تایید کد
 const step = ref<'creds' | 'otp'>('creds')
@@ -145,22 +162,15 @@ function togglePasswordVisibility() {
 
 // متد ورود
 async function submitLogin() {
-  // loading.value = true
-  // try {
-  //   const token = 'fake-token' // از API توکن می‌گیریم
-  //   const role = 'operator' // نقش را از API می‌گیریم
-  //   auth.setAuth(token, role, emailOrPhone.value)
-
-  //   router.push({ name: 'dashboard' }) // هدایت به صفحه داشبورد
-  // } catch (error) {
-  //   console.error('Login failed', error)
-  // } finally {
-  //   password.value = ''
-  //   loading.value = false
-  // }
 
   // فعلاً مرحله‌ی اول فقط اعتبارسنجی فرمی ساده و رفتن به مرحله OTP
-  if (!emailOrPhone.value || !password.value) return
+  if (!emailOrUsername.value || !phone.value || !password.value) return
+
+  // چک صحت شماره موبایل
+  if (!isValidPhone(phone.value)) {
+    alert('شماره موبایل معتبر وارد کنید')
+    return
+  }
   loading.value = true
   // TODO: اگر خواستی در همین‌جا API ارسال OTP بزنی
   setTimeout(() => {
@@ -230,7 +240,7 @@ async function submitOtp() {
     // شبیه‌سازی ورود موفق:
     const token = 'fake-token'
     const role = 'operator'
-    auth.setAuth(token, role, emailOrPhone.value)
+    auth.setAuth(token, role, phone.value)
     router.push({ name: 'dashboard' })
   } catch (e) {
     otpError.value = 'کد نامعتبر است. دوباره تلاش کنید.'
@@ -264,7 +274,7 @@ function resendOtp() {
   width: 45%;
   background-color: #ddeef8;
   padding-top: 100px;
-  min-height: 600px;
+  min-height: 700px;
 }
 
 .left-side img {
@@ -346,11 +356,15 @@ input {
   padding-right: 20px;
 }
 
+input::placeholder {
+  text-align: right;
+}
+
 .divider {
   /* display: flex;  */
   align-items: center;
   justify-content: center;
-  margin: 40px 0;
+  margin: 20px 0;
   text-align: center;
 }
 
@@ -386,7 +400,7 @@ button {
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 button:disabled {
@@ -400,7 +414,7 @@ button:hover {
 .bottom-links {
   margin-top: -10px;
   text-align: left;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .Reg-btn {
@@ -429,7 +443,7 @@ button:hover {
   font-size: 16px;
   text-align: center;
   text-decoration: none;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .link-button:hover {
@@ -453,6 +467,10 @@ button:hover {
 }
 
 .password-container {
+  position: relative;
+}
+
+.phone-container {
   position: relative;
 }
 
@@ -511,6 +529,7 @@ button:hover {
   padding: 0;
   cursor: pointer;
   color: #0277bd;
+  margin: 20px 0 40px;
 }
 
 .linklike:hover {
@@ -529,6 +548,7 @@ button:hover {
   .left-side img {
     width: 450px;
     height: 500px;
+    margin-top: 60px;
   }
   .left-side {
     height: 70vw;
