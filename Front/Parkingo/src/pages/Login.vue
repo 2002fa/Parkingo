@@ -27,7 +27,6 @@
               />
             </div>
 
-
             <div class="input-group">
               <label for="phone">شماره تلفن</label>
               <div class="phone-container">
@@ -43,7 +42,6 @@
                 />
               </div>
             </div>
-
 
             <div class="input-group">
               <label for="password">رمز عبور</label>
@@ -108,16 +106,15 @@
               </button>
 
               <div class="bottom-links otp-actions">
-                <button type="button" class="linklike" @click="backToCreds">ویرایش اطلاعات ورود</button>
+                <button type="button" class="linklike" @click="backToCreds">
+                  ویرایش اطلاعات ورود
+                </button>
                 <button type="button" class="linklike" @click="resendOtp">ارسال مجدد کد</button>
               </div>
             </form>
           </div>
 
-          <div class="divider">
-            <!-- <div class="line" style="margin-left: 5px"></div>
-            <div class="has-acc" style="font-size: 15px">حساب کاربری ندارید؟</div> -->
-
+          <!-- <div class="divider">
             <div class="line"></div>
             <div class="has-acc">حساب کاربری ندارید؟</div>
           </div>
@@ -126,7 +123,7 @@
             <router-link :to="{ name: 'register' }">
               <button style="background-color: #215a75">ثبت نام</button>
             </router-link>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -162,7 +159,6 @@ function togglePasswordVisibility() {
 
 // متد ورود
 async function submitLogin() {
-
   // فعلاً مرحله‌ی اول فقط اعتبارسنجی فرمی ساده و رفتن به مرحله OTP
   if (!emailOrUsername.value || !phone.value || !password.value) return
 
