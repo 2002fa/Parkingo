@@ -107,7 +107,7 @@
 
               <div class="bottom-links otp-actions">
                 <button type="button" class="linklike" @click="backToCreds">
-                  ویرایش اطلاعات ورود
+                  ویرایش اطلاعات
                 </button>
                 <button type="button" class="linklike" @click="resendOtp">ارسال مجدد کد</button>
               </div>
@@ -472,7 +472,7 @@ button:hover {
 
 /* ==== OTP Stage ==== */
 .otp-stage {
-  margin-top: 10px;
+  margin-top: 50px;
   direction: rtl;
 }
 
@@ -486,24 +486,29 @@ button:hover {
 
 .otp-form {
   max-width: 400px;
-  margin: 0 auto;
+  margin: 30px auto;
 }
 
 .otp-boxes {
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin: 16px 0 8px;
+  margin: 20px 0 8px;
+  text-align: center;
 }
 
 .otp-input {
   width: 56px;
   height: 56px;
   text-align: center;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
   font-size: 24px;
   border: 1px solid #ddd;
   border-radius: 12px;
   outline: none;
+  padding: 1px;
   background: #fff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
@@ -525,7 +530,8 @@ button:hover {
   padding: 0;
   cursor: pointer;
   color: #0277bd;
-  margin: 20px 0 40px;
+  width: 50%;
+  margin: 50px 0 40px;
 }
 
 .linklike:hover {
@@ -537,7 +543,7 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 30px;
 }
 
 @media (max-width: 1000px) {
@@ -603,6 +609,9 @@ button:hover {
   }
   .has-acc {
     font-size: 14px;
+  }
+  .otp-actions {
+    gap: 10px;
   }
 }
 </style>

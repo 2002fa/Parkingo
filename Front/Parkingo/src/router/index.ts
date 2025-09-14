@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
     component: ForgetPassword,
     meta: { hideLayout: true },
   },
-  { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { hideLayout: true, guestOnly: true }  },
   // { path: '/:pathMatch(.*)*', name: 'NotFound', component: Notfound, meta: { hideLayout: true } },
 ]
 
@@ -36,7 +36,7 @@ router.beforeEach((to) => {
   const token = forceLogin ? '' : localStorage.getItem('sp_token')
 
   if (to.meta.requiresAuth && !token) return { name: 'home' }
-  if (to.meta.guestOnly && token) return { name: 'dashboard' }
+  // if (to.meta.guestOnly && token) return { name: 'dashboard' }
 })
 
 export default router

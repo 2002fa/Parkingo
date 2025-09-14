@@ -12,6 +12,16 @@ const router = useRouter()
 </template>
 
 <style scoped>
-.not-found { text-align: center; padding: 64px 16px; }
-button { margin-top: 16px; padding: 8px 16px; border: 0; background: #0277bd; color: #fff; border-radius: 6px; }
+.not-found {
+  text-align: center;
+  padding: 64px 16px;
+}
+button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border: 0;
+  background: #0277bd;
+  color: #fff;
+  border-radius: 6px;
+}
 </style>

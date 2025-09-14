@@ -309,7 +309,7 @@ h2 {
 
 .login-link {
   background: transparent;
-  border: 2px solid #2e5d6e;
+border: 3px solid #2e5d6e;
   color: #2e5d6e;
   cursor: pointer;
   padding: 4px 8px;
@@ -360,7 +360,7 @@ h2 {
 
 .hero-logo {
   position: absolute;
-  top: 120px;
+  top: 100px;
   margin-right: 400px;
   z-index: 10;
   width: 200px;
