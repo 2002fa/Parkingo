@@ -1,5 +1,11 @@
 <template>
   <div class="opdash" dir="rtl">
+    <div class="financial">
+      <router-link :to="{ name: 'financialReports' }" class="btn-report">
+        گزارشات مالی
+      </router-link>
+    </div>
+
     <main class="lot">
       <header class="top" style="display: flex">
         <div class="badges">
@@ -145,14 +151,9 @@ function onSelect(id: string) {
   min-height: 100vh;
   height: fit-content;
   background: var(--bg);
-  /* padding: 40px 300px 60px; */
-  /* box-sizing: border-box; */
-  /* display: grid; */
-  /* grid-template-rows: auto 1fr auto; */
-  /* gap: 10px; */
   direction: ltr;
-  overflow: auto; /* اسکرول کلی صفحه */
-  padding: 40px 24px 60px; /* از 40px 300px ... به 24px برای واکنش‌گرایی */
+  overflow: auto;
+  padding: 40px 24px 60px;
   background: var(--bg);
 }
 
@@ -379,6 +380,28 @@ function onSelect(id: string) {
 .chip--gray {
   background: #cfd8dc;
   border: 1px solid #cfd8dc;
+}
+
+.financial {
+  width: 100%;
+  text-align: center;
+}
+
+.btn-report {
+  display: inline-block;
+  background: #215a75;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease;
+  justify-self: center;
+}
+.btn-report:hover {
+  background: #0f6ea1;
 }
 
 @media (max-width: 1080px) {

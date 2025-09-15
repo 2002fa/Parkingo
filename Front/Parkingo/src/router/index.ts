@@ -2,8 +2,9 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import ForgetPassword from '@/pages/Forget-password.vue'
-import Dashboard from '@/pages/Dashboard.vue'
+import Dashboard from '@/pages/ParkingMonitoring.vue'
 import Home from '@/pages/Home.vue'
+import financialReports from '@/pages/FinancialReports.vue'
 // import Notfound from '@/pages/NotFound.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -22,7 +23,19 @@ const routes: RouteRecordRaw[] = [
     component: ForgetPassword,
     meta: { hideLayout: true },
   },
-  { path: '/dashboard', name: 'dashboard', component: Dashboard, meta: { hideLayout: true, guestOnly: true }  },
+  {
+    path: '/financial-reports',
+    name: 'financialReports',
+    component: financialReports,
+    meta: { requiresAuth: true },
+  },
+
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
+    meta: { hideLayout: true, guestOnly: true },
+  },
   // { path: '/:pathMatch(.*)*', name: 'NotFound', component: Notfound, meta: { hideLayout: true } },
 ]
 

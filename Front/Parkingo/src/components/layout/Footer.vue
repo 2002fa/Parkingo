@@ -39,9 +39,10 @@
     #185c66 75%,
     #124f64 100%
   );
-  min-height: 300px;
+  min-height: 250px;
   text-align: center;
   overflow: hidden;
+  max-height: 300px;
 }
 
 .container {
@@ -79,6 +80,7 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  font-size: 15px;
 }
 
 .logo-links {
@@ -107,9 +109,9 @@
 small {
   color: #fff;
   justify-self: center;
-  margin: 100px;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 100px 0;
+  font-size: 14px;
+  font-weight: 300;
 }
 
 @media (max-width: 700px) {
@@ -118,14 +120,15 @@ small {
   }
   .text-links,
   .logo-links {
-    gap: 35px;
+    gap: 25px;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
+    font-size: 13px;
+    margin-top: 20px;
   }
   small {
-    font-size: 15px;
+    font-size: 12px;
   }
 }
 </style>
