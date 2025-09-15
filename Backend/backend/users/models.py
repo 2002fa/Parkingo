@@ -8,7 +8,6 @@ class User(AbstractUser):
     ROLE_CHOICES = (
         ("admin", "مدیر سیستم"),
         ("operator", "اپراتور"),
-        ("driver", "راننده"),
     )
 
     role = models.CharField(
@@ -32,3 +31,11 @@ class User(AbstractUser):
 
     def is_driver(self):
         return self.role == "driver"
+
+
+class User(AbstractUser):
+    ROLE_CHOICES = (
+        ("admin", "Admin"),
+        ("operator", "Operator"),
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)

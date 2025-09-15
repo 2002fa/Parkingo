@@ -233,6 +233,7 @@ async function submitOtp() {
   try {
     // TODO: اینجا به API تایید OTP وصل شو
     await new Promise((r) => setTimeout(r, 700))
+    
     // شبیه‌سازی ورود موفق:
     const token = 'fake-token'
     const role = 'operator'

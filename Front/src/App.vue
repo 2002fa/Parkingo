@@ -46,8 +46,8 @@ import Footer from './components/layout/Footer.vue' -->
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import Header from '@/components/layout/Header.vue'
-import Footer from '@/components/layout/Footer.vue'
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 const route = useRoute()
 </script>
 
@@ -55,7 +55,7 @@ const route = useRoute()
   <div id="app">
     <Header v-if="!route.meta.hideLayout" />
     <router-view />
-    <Footer v-if="!route.meta.hideLayout" />
+    <Footer v-if="!(route.meta?.hideFooter || route.meta?.hideLayout)" />
   </div>
 </template>
 
