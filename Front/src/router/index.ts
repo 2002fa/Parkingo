@@ -2,8 +2,9 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import ForgetPassword from '@/pages/Forget-password.vue'
-import Dashboard from '@/pages/Dashboard.vue'
+import Dashboard from '@/pages/ParkingMonitoring.vue'
 import Home from '@/pages/Home.vue'
+import financialReports from '@/pages/FinancialReports.vue'
 import Parkings from '@/pages/Dashboard/Parkings.vue';
 import AddParking from '@/pages/Dashboard/AddParking.vue';
 import DetailsOfParking from '@/pages/Dashboard/DetailsOfParking.vue';
@@ -34,6 +35,19 @@ const routes: RouteRecordRaw[] = [
     name: 'forgotPassword',
     component: ForgetPassword,
     meta: { hideLayout: true },
+  },
+  {
+    path: '/financial-reports',
+    name: 'financialReports',
+    component: financialReports,
+    meta: { requiresAuth: true },
+  },
+
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
+    meta: { hideLayout: true, guestOnly: true },
   },
   {
     path: '/dashboard',
