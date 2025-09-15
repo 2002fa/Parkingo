@@ -49,7 +49,10 @@ button,
 input,
 textarea,
 label,
-div {
+div,
+span,
+ul,
+li {
   font-family: 'Vazirmatn';
 }
 
