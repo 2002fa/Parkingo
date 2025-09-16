@@ -17,6 +17,10 @@ import OperatorsShift from '@/pages/Dashboard/OperatorsShift.vue'
 import Admins from '@/pages/Dashboard/Admins.vue'
 import AddAdmin from '@/pages/Dashboard/AddAdmin.vue'
 import OperatorProfile from '@/pages/Dashboard/OperatorProfile.vue'
+import financialReports from '@/pages/FinancialReports.vue'
+import QrDisplay from '@/pages/QrDisplay.vue'
+import DriverInfo from '@/pages/Driver-info.vue'
+import DriverRouting from '@/pages/Driver-routing.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },
@@ -26,6 +30,33 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'login', component: Login, meta: { hideLayout: true, guestOnly: true } },
   { path: '/register', name: 'register', component: Register, meta: { hideLayout: true, guestOnly: true } },
   { path: '/forget-password', name: 'forgotPassword', component: ForgetPassword, meta: { hideLayout: true } },
+  {
+    path: '/financial-reports',
+    name: 'financialReports',
+    component: financialReports,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/qr/:slotId',
+    name: 'qr',
+    component: QrDisplay,
+    props: true,
+    meta: { hideLayout: true },
+  },
+  {
+    path: '/driver-info/:slotId?',
+    name: 'DriverInfo',
+    component: DriverInfo,
+    props: true,
+    meta: { hideLayout: true, guestOnly: true },
+  },
+  {
+    path: '/driver-routing/:slotId?',
+    name: 'DriverRouting',
+    component: DriverRouting,
+    props: true,
+    meta: { hideLayout: true, guestOnly: true },
+  },
 
   {
     path: '/dashboard',
