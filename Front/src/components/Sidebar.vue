@@ -88,10 +88,16 @@
       </nav>
 
       <div class="logout-section">
-        <button @click="emitLogout">
+        <!-- <button @click="emitLogout">
+          <img src="@/assets/icons/logout.svg" alt="Logout" class="menu-icon" />
+          <span>خروج</span>
+        </button> -->
+
+        <button @click="logout">
           <img src="@/assets/icons/logout.svg" alt="Logout" class="menu-icon" />
           <span>خروج</span>
         </button>
+
       </div>
     </div>
   </aside>
@@ -100,6 +106,8 @@
 <script setup lang="ts">
 import { computed, defineProps, defineEmits } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 // تعریف نوع‌های TypeScript
 type UserRole = 'admin' | 'operator' | null;
@@ -115,6 +123,8 @@ interface Emits {
 }
 
 const route = useRoute();
+const router = useRouter();
+const auth = useAuthStore();
 
 const props = withDefaults(defineProps<Props>(), {
   isOpen: true,
@@ -127,13 +137,18 @@ const isLinkActive = (path: string): boolean => {
   return route.path === path;
 };
 
-const emitLogout = (): void => {
-  emit('logout');
-};
+// const emitLogout = (): void => {
+//   emit('logout');
+// };
 
 const emitToggleSidebar = (): void => {
   emit('update:is-open', !props.isOpen);
 };
+
+function logout() {
+  auth.clearAuth()
+  router.push({ name: 'home' })
+}
 </script>
 
 <style scoped>

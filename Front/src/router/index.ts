@@ -1,4 +1,8 @@
+// src/router/index.ts
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+// صفحات
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import ForgetPassword from '@/pages/Forget-password.vue'
@@ -22,22 +26,33 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'login', component: Login, meta: { hideLayout: true, guestOnly: true } },
   { path: '/register', name: 'register', component: Register, meta: { hideLayout: true, guestOnly: true } },
   { path: '/forget-password', name: 'forgotPassword', component: ForgetPassword, meta: { hideLayout: true } },
+
   {
     path: '/dashboard',
     component: DashboardLayout,
     meta: { requiresAuth: true, hideFooter: true },
     children: [
       { path: '', name: 'dashboard', component: ParkingMonitoring },
-      { path: 'financial-reports', name: 'financialReports', component: FinancialReports },
-      { path: 'admins', component: Admins },
-      { path: 'add-admin', component: AddAdmin },
-      { path: 'operator-profile', component: OperatorProfile },
-      { path: 'parkings', name: 'parkings', component: Parkings },
-      { path: 'add-parking', name: 'add-parking', component: AddParking },
-      { path: 'details-of-parking', name: 'details-of-parking', component: DetailsOfParking, props: true },
-      { path: 'operators-shift', name: 'operators-shift', component: OperatorsShift }
+
+      // گزارشات مالی فقط برای ادمین
+      { path: 'financial-reports', name: 'financialReports', component: FinancialReports, meta: { roles: ['admin'] } },
+
+      // مدیریت ادمین‌ها فقط برای ادمین
+      { path: 'admins', component: Admins, meta: { roles: ['admin'] } },
+      { path: 'add-admin', component: AddAdmin, meta: { roles: ['admin'] } },
+
+      // پروفایل اپراتور برای اپراتور و ادمین
+      { path: 'operator-profile', component: OperatorProfile, meta: { roles: ['operator', 'admin'] } },
+
+      // مدیریت پارکینگ‌ها برای ادمین
+      { path: 'parkings', name: 'parkings', component: Parkings, meta: { roles: ['admin'] } },
+      { path: 'add-parking', name: 'add-parking', component: AddParking, meta: { roles: ['admin'] } },
+      { path: 'details-of-parking', name: 'details-of-parking', component: DetailsOfParking, props: true, meta: { roles: ['admin'] } },
+
+      // شیفت اپراتورها برای ادمین و اپراتور
+      { path: 'operators-shift', name: 'operators-shift', component: OperatorsShift, meta: { roles: ['admin', 'operator'] } }
     ]
-  },
+  }
 ]
 
 const router = createRouter({
@@ -45,11 +60,28 @@ const router = createRouter({
   routes,
 })
 
+// گارد نقش و لاگین
 router.beforeEach((to) => {
-  // const forceLogin = localStorage.getItem('force_login') === '1'
-  // const token = forceLogin ? '' : localStorage.getItem('sp_token')
+  const auth = useAuthStore()
 
-  // if (to.meta.requiresAuth && !token) return { name: 'home' }
+  // نیاز به لاگین
+  if (to.meta.requiresAuth && !auth.isLoggedIn) {
+    return { name: 'login' }
+  }
+
+  // اگر نقش لازم تعریف شده باشه
+  if (to.meta.roles) {
+    const allowedRoles = to.meta.roles as string[]
+    if (!allowedRoles.includes(auth.role)) {
+      // اگه کاربر اجازه نداشت → بفرست به صفحه اصلی یا داشبورد
+      return { name: 'home' }
+    }
+  }
+
+  // فقط مهمان (login/register) → وقتی لاگین هست نذاره
+  // if (to.meta.guestOnly && auth.isLoggedIn) {
+  //   return { name: 'dashboard' }
+  // }
 })
 
 export default router

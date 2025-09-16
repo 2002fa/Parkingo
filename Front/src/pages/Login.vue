@@ -262,12 +262,23 @@ async function submitOtp() {
       token: data.token,
       user: data.user  // کل اطلاعات کاربر را ذخیره کنید
     })
-    router.push({ name: 'dashboard' })
+
+    if (auth.role === "admin") {
+      router.push({ name: "parkings" });
+    } else if (auth.role === "operator") {
+      router.push({ name: "dashboard" });
+    } else {
+      router.push({ name: "home" });
+    }
+
+
   } catch (e: any) {
     otpError.value = e.message
   } finally {
     verifying.value = false
   }
+
+
 }
 
 
