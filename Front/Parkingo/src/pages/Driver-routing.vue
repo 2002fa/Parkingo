@@ -149,7 +149,6 @@
       </div>
 
       <!-- مسیر (فلش آبی) -->
-
       <svg
         class="route-svg"
         ref="routeSvg"
@@ -481,7 +480,7 @@ const resizeHandler = () => {
 }
 .back {
   position: absolute;
-  left: 12px;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
   width: 36px;
