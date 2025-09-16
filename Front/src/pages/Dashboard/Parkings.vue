@@ -150,7 +150,7 @@ function goToAddParking() {
 }
 
 function goToDetails(id: number) {
-  router.push(`/dashboard/parking-details/${id}`)
+  router.push(`/dashboard/details-of-parking`)
 }
 
 function onSearchInput() {

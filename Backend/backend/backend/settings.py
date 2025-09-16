@@ -150,4 +150,3 @@ CORS_ALLOWED_ORIGINS = [
 
 # اجازه ارسال credentials (کوئری‌ها، کوکی‌ها)
 CORS_ALLOW_CREDENTIALS = True
-

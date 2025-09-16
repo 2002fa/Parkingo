@@ -153,7 +153,7 @@ function logout() {
 
 <style scoped>
 .sidebar {
-  background-color: #1e2a5a;
+  background: linear-gradient(#122E3B 0%, #2C779B 25%, #3DA8DB 49%, #2F81A8 75%,#215A76 99%, #0277bd 100%);
   color: white;
   padding: 0;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
@@ -185,7 +185,7 @@ function logout() {
   left: 0;
   height: 100%;
   width: 50px; /* کاهش عرض */
-  background-color: #1e2a5a;
+  background: linear-gradient(#122E3B 0%, #2C779B 25%, #3DA8DB 49%, #2F81A8 75%,#215A76 99%, #0277bd 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -267,7 +267,7 @@ function logout() {
 }
 
 .sidebar-nav li.is-active-link a {
-  background-color: #33427f;
+  /* background: linear-gradient(#122E3B 0%, #2C779B 25%, #3DA8DB 49%, #2F81A8 75%,#215A76 99%, #0277bd 100%); */
   border-right: 4px solid #66C9DA; /* کاهش ضخامت border */
 }
 
