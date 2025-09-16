@@ -47,8 +47,9 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ),
 }
 
@@ -149,3 +150,4 @@ CORS_ALLOWED_ORIGINS = [
 
 # اجازه ارسال credentials (کوئری‌ها، کوکی‌ها)
 CORS_ALLOW_CREDENTIALS = True
+

@@ -22,8 +22,8 @@
             </button>
           </div>
           
-          <!-- add admin -->
-          <button class="btn-add" @click="goToAddParkings">
+          <!-- add parking -->
+          <button class="btn-add" @click="goToAddParking">
             <span class="plus">+</span> اضافه کردن
           </button>
         </div>
@@ -35,29 +35,26 @@
           <thead>
             <tr>
               <th>نام پارکینگ</th>
-              <th>وضعیت</th>
-              <th>شماره تلفن</th>
+              <th>نوع پارکینگ</th>
+              <th>شماره موبایل صاحب</th>
               <th>تاریخ عضویت</th>
               <th>جزئیات</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr v-for="a in paginatedAdmins" :key="a.id">
-              <td>{{ a.parking }}</td>
+            <tr v-for="a in paginatedParkings" :key="a.id">
+              <td>{{ a.name || '—' }}</td>
+              <td>{{ a.type || '—' }}</td>
+              <td>{{ a.owner_mobile || '—' }}</td>
+              <td>{{ formatDate(a.date_joined) }}</td>
               <td>
-                <div class="parking-status">{{ a.status }}</div>
-              </td>
-              <td>{{ a.phone }}</td>
-              <td>{{ a.joinDate }}</td>
-
-              <td>
-                <button class="btn-details" @click="goToDetails(a)">
+                <button class="btn-details" @click="goToDetails(a.id)">
                   مشاهده جزئیات
                 </button>
               </td>
             </tr>
-            <tr v-if="paginatedAdmins.length === 0">
+            <tr v-if="paginatedParkings.length === 0">
               <td colspan="5" class="no-results">هیچ نتیجه‌ای یافت نشد.</td>
             </tr>
           </tbody>
@@ -88,21 +85,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
+import axios from "axios"
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const auth = useAuthStore()
 
-const parkings = ref([
-  { id: 1, parking: "پارکینگ خاقانی", status: "باز(فعال)", phone: "031-34539567", joinDate: "۱۴۰۲/۰۲/۱۵"},
-  { id: 2, parking: "پارکینگ محتشم کاشانی", status: "بسته(غیرفعال)", phone: "031-34539567", joinDate: "۱۴۰۳/۰۵/۰۲" },
-  { id: 3, parking: "پارکینگ نیکبخت", status: "باز(فعال)", phone: "031-34539567", joinDate: "۱۴۰۱/۱۱/۲۷" },
-  { id: 4, parking: "پارکینگ درمانی", status: "باز(فعال)", phone: "031-34539567", joinDate: "۱۴۰۲/۰۹/۱۰"},
-])
-
+const parkings = ref<any[]>([])
 const searchQuery = ref("")
 const itemsPerPage = ref(5)
 const currentPage = ref(1)
+
+onMounted(async () => {
+  try {
+    const headers = {
+      Authorization: `Token ${auth.token}`,
+      "Content-Type": "application/json"
+    };
+    // <-- درست: endpoint پارکینگ‌ها (نه جایگاه‌ها)
+    const res = await axios.get("http://127.0.0.1:8000/api/parkings/", { headers });
+    console.log("parkings response:", res.data) // برای دیباگ ساختار داده
+    parkings.value = res.data;
+  } catch (err: any) {
+    console.error(err);
+    alert(err.response?.data?.detail || "خطا در دریافت لیست پارکینگ‌ها")
+  }
+})
 
 function normalize(s: string) {
   return s ? s.toString().trim().replace(/\s+/g, " ").toLowerCase() : ""
@@ -111,16 +121,19 @@ function normalize(s: string) {
 const filteredParkings = computed(() => {
   const q = normalize(searchQuery.value)
   if (!q) return parkings.value
-  return parkings.value.filter(
-    (a) => normalize(a.parking).includes(q) || normalize(a.parking).includes(q)
-  )
+  return parkings.value.filter((a) => {
+    const name = normalize(a.name || "")
+    const addr = normalize(a.address || "")
+    const ownerMobile = normalize(a.owner_mobile || "")
+    return name.includes(q) || addr.includes(q) || ownerMobile.includes(q)
+  })
 })
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(filteredParkings.value.length / itemsPerPage.value))
 )
 
-const paginatedAdmins = computed(() => {
+const paginatedParkings = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   return filteredParkings.value.slice(start, start + itemsPerPage.value)
 })
@@ -132,13 +145,28 @@ function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-function goToAddParkings() {
+function goToAddParking() {
   router.push("/dashboard/add-parking")
 }
-function goToDetails() {
-  router.push("/dashboard/details-of-parking")
+
+function goToDetails(id: number) {
+  router.push(`/dashboard/parking-details/${id}`)
+}
+
+function onSearchInput() {
+  currentPage.value = 1
+}
+
+function formatDate(dateStr?: string) {
+  if (!dateStr) return "—"
+  try {
+    return new Date(dateStr).toLocaleDateString("fa-IR")
+  } catch {
+    return dateStr
+  }
 }
 </script>
+
 
 <style scoped>
 .parkings-page {
