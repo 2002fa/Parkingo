@@ -6,6 +6,7 @@ import Dashboard from '@/pages/ParkingMonitoring.vue'
 import Home from '@/pages/Home.vue'
 import financialReports from '@/pages/FinancialReports.vue'
 import QrDisplay from '@/pages/QrDisplay.vue'
+import DriverInfo from '@/pages/Driver-info.vue'
 import DriverRouting from '@/pages/Driver-routing.vue'
 // import Notfound from '@/pages/Not-found.vue'
 
@@ -46,11 +47,20 @@ const routes: RouteRecordRaw[] = [
     meta: { hideLayout: true },
   },
   {
-    path: '/Driver-routing',
-    name: 'DriverRouting',
-    component: DriverRouting,
+    path: '/driver-info/:slotId?',
+    name: 'DriverInfo',
+    component: DriverInfo,
+    props: true,
     meta: { hideLayout: true, guestOnly: true },
   },
+  {
+    path: '/driver-routing/:slotId?',
+    name: 'DriverRouting',
+    component: DriverRouting,
+    props: true,
+    meta: { hideLayout: true, guestOnly: true },
+  },
+
   // { path: '/:pathMatch(.*)*', name: 'NotFound', component: Notfound, meta: { hideLayout: true } },
 ]
 

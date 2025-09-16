@@ -5,8 +5,8 @@
         class="btn btn-primary"
         @click="
           $router.push({
-            name: 'DriverRouting',
-            params: { slotId: selected },
+            name: 'DriverInfo',
+            params: { slotId },
             query: { t: Date.now() },
           })
         "
@@ -39,7 +39,7 @@ import QRCode from 'qrcode' // ← نیاز به نصب پکیج
 // اگر در روتر props: true گذاشتی:
 const props = defineProps<{ slotId: string }>()
 const slotId = props.slotId
-const selected = ref<string | null>(null)
+// const selected = ref<string | null>(null)
 
 const qrDataUrl = ref<string>('')
 
@@ -53,6 +53,8 @@ onMounted(async () => {
     color: { dark: '#215A75', light: '#FFFFFF' },
   })
 })
+
+
 </script>
 
 <style scoped>
