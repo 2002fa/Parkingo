@@ -1,41 +1,25 @@
-# users/models.py
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ("admin", "مدیر سیستم"),
+        ("driver", "راننده"),
         ("operator", "اپراتور"),
+        ("admin", "مدیر"),
+    )
+
+    phone = models.CharField(
+        max_length=15, unique=True, verbose_name="شماره تلفن"
     )
 
     role = models.CharField(
-        max_length=20, choices=ROLE_CHOICES, default="driver", verbose_name="نقش کاربر"
+        max_length=10, choices=ROLE_CHOICES, default="driver", verbose_name="نقش"
     )
-    phone_number = models.CharField(
-        max_length=15, blank=True, verbose_name="شماره تلفن"
-    )
-    license_plate = models.CharField(
-        max_length=20, blank=True, verbose_name="پلاک خودرو"
-    )
+
+    # فیلدهای اضافی اگر نیاز دارید
+    # profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.username} - {self.get_role_display()}"
-
-    def is_admin(self):
-        return self.role == "admin"
-
-    def is_operator(self):
-        return self.role == "operator"
-
-    def is_driver(self):
-        return self.role == "driver"
-
-
-class User(AbstractUser):
-    ROLE_CHOICES = (
-        ("admin", "Admin"),
-        ("operator", "Operator"),
-    )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)

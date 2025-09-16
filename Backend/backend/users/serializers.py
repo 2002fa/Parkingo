@@ -1,56 +1,44 @@
-# users/serializers.py
-
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
-from rest_framework.validators import UniqueValidator
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from django.contrib.auth import authenticate
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            "id",
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "role",
-            "phone_number",
-            "license_plate",
-            "is_staff",
-        )
+        fields = ("id", "username", "email", "phone", "role", "first_name", "last_name")
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
-    )
-    password2 = serializers.CharField(write_only=True, required=True)
-    role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default="driver")
+class LoginSerializer(serializers.Serializer):
+    email_or_username = serializers.CharField()
+    phone = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
-    class Meta:
-        model = User
-        fields = (
-            "username",
-            "password",
-            "password2",
-            "email",
-            "first_name",
-            "last_name",
-            "role",
-            "phone_number",
-            "license_plate",
-        )
+    def validate(self, data):
+        email_or_username = data.get("email_or_username")
+        phone = data.get("phone")
+        password = data.get("password")
 
-    def validate(self, attrs):
-        if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError({"password": "Passwords don't match"})
-        return attrs
+        # بررسی وجود کاربر با ایمیل/نام کاربری و شماره تلفن
+        try:
+            if "@" in email_or_username:
+                user = User.objects.get(email=email_or_username, phone=phone)
+            else:
+                user = User.objects.get(username=email_or_username, phone=phone)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("کاربری با این مشخصات یافت نشد")
 
-    def create(self, validated_data):
-        validated_data.pop("password2")
-        user = User.objects.create_user(**validated_data)
-        return user
+        # بررسی صحت رمز عبور
+        if not user.check_password(password):
+            raise serializers.ValidationError("رمز عبور اشتباه است")
+
+        if not user.is_active:
+            raise serializers.ValidationError("حساب کاربری غیرفعال است")
+
+        data["user"] = user
+        return data
+
+
+class OTPSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=4)
+    phone = serializers.CharField()

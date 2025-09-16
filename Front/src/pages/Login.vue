@@ -159,23 +159,37 @@ function togglePasswordVisibility() {
 
 // متد ورود
 async function submitLogin() {
-  // فعلاً مرحله‌ی اول فقط اعتبارسنجی فرمی ساده و رفتن به مرحله OTP
   if (!emailOrUsername.value || !phone.value || !password.value) return
-
-  // چک صحت شماره موبایل
   if (!isValidPhone(phone.value)) {
     alert('شماره موبایل معتبر وارد کنید')
     return
   }
   loading.value = true
-  // TODO: اگر خواستی در همین‌جا API ارسال OTP بزنی
-  setTimeout(() => {
-    loading.value = false
-    step.value = 'otp' // نمایش صفحه دوم
-    // فوکوس روی خانهٔ اول کد
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/users/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email_or_username: emailOrUsername.value,
+        phone: phone.value,
+        password: password.value,
+      }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.detail || "خطا در ورود")
+
+    console.log("OTP Code (for test):", data.otp) // فعلاً توی کنسول میاد
+    step.value = 'otp'
     requestAnimationFrame(() => otpInputs.value[0]?.focus())
-  }, 500)
+  } catch (e: any) {
+    alert(e.message)
+  } finally {
+    loading.value = false
+  }
 }
+
 
 // هدایت به صفحه ثبت نام
 function goToRegister() {
@@ -231,20 +245,31 @@ async function submitOtp() {
   }
   verifying.value = true
   try {
-    // TODO: اینجا به API تایید OTP وصل شو
-    await new Promise((r) => setTimeout(r, 700))
-    
-    // شبیه‌سازی ورود موفق:
-    const token = 'fake-token'
-    const role = 'operator'
-    auth.setAuth(token, role, phone.value)
+    const res = await fetch("http://127.0.0.1:8000/api/users/verify-otp/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone: phone.value,
+        code: code,
+      }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || "خطا در تأیید کد")
+
+    // ذخیره توکن و نقش
+    auth.setAuth({
+      token: data.token,
+      user: data.user  // کل اطلاعات کاربر را ذخیره کنید
+    })
     router.push({ name: 'dashboard' })
-  } catch (e) {
-    otpError.value = 'کد نامعتبر است. دوباره تلاش کنید.'
+  } catch (e: any) {
+    otpError.value = e.message
   } finally {
     verifying.value = false
   }
 }
+
 
 function resendOtp() {
   // TODO: درخواست ارسال مجدد کد به بک

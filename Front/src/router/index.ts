@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
     component: DashboardLayout,
     meta: { requiresAuth: true, hideFooter: true },
     children: [
-      { path: '', name: 'dashboard-home', component: ParkingMonitoring },
+      { path: '', name: 'dashboard', component: ParkingMonitoring },
       { path: 'financial-reports', name: 'financialReports', component: FinancialReports },
       { path: 'admins', component: Admins },
       { path: 'add-admin', component: AddAdmin },
