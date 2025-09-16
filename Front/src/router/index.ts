@@ -18,6 +18,12 @@ import Admins from '@/pages/Dashboard/Admins.vue'
 import AddAdmin from '@/pages/Dashboard/AddAdmin.vue'
 import OperatorProfile from '@/pages/Dashboard/OperatorProfile.vue'
 
+import financialReports from '@/pages/FinancialReports.vue'
+import QrDisplay from '@/pages/QrDisplay.vue'
+import DriverInfo from '@/pages/Driver-info.vue'
+import DriverRouting from '@/pages/Driver-routing.vue'
+// import Notfound from '@/pages/Not-found.vue'
+
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },
 
@@ -52,13 +58,45 @@ const routes: RouteRecordRaw[] = [
       // شیفت اپراتورها برای ادمین و اپراتور
       { path: 'operators-shift', name: 'operators-shift', component: OperatorsShift, meta: { roles: ['admin', 'operator'] } }
     ]
-  }
+  },
+
+
+  {
+    path: '/financial-reports',
+    name: 'financialReports',
+    component: financialReports,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/qr/:slotId',
+    name: 'qr',
+    component: QrDisplay,
+    props: true,
+    meta: { hideLayout: true },
+  },
+  {
+    path: '/driver-info/:slotId?',
+    name: 'DriverInfo',
+    component: DriverInfo,
+    props: true,
+    meta: { hideLayout: true, guestOnly: true },
+  },
+  {
+    path: '/driver-routing/:slotId?',
+    name: 'DriverRouting',
+    component: DriverRouting,
+    props: true,
+    meta: { hideLayout: true, guestOnly: true },
+  },
+
+  // { path: '/:pathMatch(.*)*', name: 'NotFound', component: Notfound, meta: { hideLayout: true } },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
 
 // گارد نقش و لاگین
 router.beforeEach((to) => {
@@ -83,5 +121,8 @@ router.beforeEach((to) => {
   //   return { name: 'dashboard' }
   // }
 })
+
+
+
 
 export default router
