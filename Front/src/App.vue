@@ -48,6 +48,8 @@ import Footer from './components/layout/Footer.vue' -->
 import { useRoute } from 'vue-router'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+// import Sidebar from "@/components/Sidebar.vue";
+
 const route = useRoute()
 </script>
 

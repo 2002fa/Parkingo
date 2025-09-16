@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <Header @toggleSidebar="sidebarOpen = !sidebarOpen" />
-    <Sidebar :isOpen="sidebarOpen" />
+    <Sidebar v-model:is-open="sidebarOpen" />
     <main class="flex-1 p-6 bg-gray-50 mt-[15px]">
       <router-view />
     </main>
